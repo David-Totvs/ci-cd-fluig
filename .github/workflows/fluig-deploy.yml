@@ -1,0 +1,34 @@
+# .github/workflows/fluig-deploy.yml
+name: Deploy Fluig Datasets
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'datasets/**' # Só roda se houver alteração nos datasets
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Fazer o Checkout do código
+        uses: actions/checkout@v3
+
+      - name: ⚙️ Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: 📦 Instalar dependências
+        run: npm install soap
+
+      - name: 🚀 Publicar Dataset no Fluig
+        env:
+          FLUIG_URL: ${{ secrets.FLUIG_URL }}
+          FLUIG_CONSUMER_KEY: ${{ secrets.FLUIG_CONSUMER_KEY }}
+          FLUIG_CONSUMER_SECRET: ${{ secrets.FLUIG_CONSUMER_SECRET }}
+          FLUIG_ACCESS_TOKEN: ${{ secrets.FLUIG_ACCESS_TOKEN }}
+          FLUIG_TOKEN_SECRET: ${{ secrets.FLUIG_TOKEN_SECRET }}
+        run: node scripts/deploy-dataset.js
